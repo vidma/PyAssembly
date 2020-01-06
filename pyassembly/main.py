@@ -7,8 +7,11 @@ from distutils.sysconfig import get_python_version
 
 try:
     from pip._internal.commands import InstallCommand
-except ImportError:  # for pip <= 9.0.3
-    from pip.commands import InstallCommand
+except ImportError:  # for newest pip
+    try:
+        from pip._internal.commands.install import InstallCommand
+    except ImportError:  # for pip <= 9.0.3
+        from pip.commands import InstallCommand
 
 from pkg_resources import get_build_platform, Distribution
 
@@ -58,7 +61,7 @@ class pyassembly(Command):
 
         # install deps, if needed
         if os.path.exists(self.requirements_file):
-            install_command = InstallCommand(isolated=False)
+            install_command = InstallCommand(isolated=False, name = "dam", summary = "...")
             install_command.main(args=['-r', self.requirements_file, '-t', dist_dir])
 
         bdist_egg = self.distribution.get_command_obj('bdist_egg')  # type: Command
